@@ -35,7 +35,7 @@ app.get('/', (request, response) => {
 
 app.post('/', urlencodedParser, (req, res) => {
     const { name, email } = req.body;
-    const massive= [];
+
     // Сохранить нового пользователя в базе данных или другом источнике данных
     const newUser = { id: 3, name, email };
 
