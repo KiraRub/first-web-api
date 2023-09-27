@@ -20,26 +20,19 @@ const app = express();
 const port = process.env.PORT;
 
 const urlencodedParser = express.urlencoded({extended: false});
+const users = [];
 
-app.get('/', (request, response) => {
-    response.sendFile(__dirname + "/index.html");
-    const users = [
-        { id: 1, name: 'John Doe' },
-        { id: 2, name: 'Jane Smith' }
-    ];
-    response.json(users);
-    console.log(response.json(users));
-});
+app.post('/', urlencodedParser,(request, response) => {
+    const { name, email } = request.body;
 
-
-
-app.post('/', urlencodedParser, (req, res) => {
-    const { name, email } = req.body;
-
-    // Сохранить нового пользователя в базе данных или другом источнике данных
     const newUser = { id: 3, name, email };
 
-    res.status(201).json(newUser);
+    users.push(newUser)
+    response.status(201).json(newUser);
+});
+
+app.get('/', (request, response) => {
+    response.json(users);
 });
 
 app.listen(port, () => console.log(`Running on port ${port}`));
