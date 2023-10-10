@@ -54,25 +54,13 @@ const User = sequelize.define('User', {
 }, {
     // Other model options go here
 });
+
 async function seqsync() {
     await sequelize.sync({force: true});
     console.log("Все модели польностью синхронизированы.");
-    try {
-        var itsTime = new Date()
-        const user = User.create({
-            id: 1,
-            name: "Kirill",
-            phone: "+79091049890",
-            createAt: itsTime
-        });
-        console.log(User === sequelize.models.User);
-    }
-    catch (err){
-        console.log(err)
-    }
 }
-seqsync();
 
+seqsync();
 
 dotenv.config();
 
@@ -97,20 +85,15 @@ const userses = [];
 //     });
 // connection.end();
 
-app.post('/', urlencodedParser, (request, response) => {
+app.post('/users', urlencodedParser, (request, response) => {
     const {
+        id,
         name,
-        email
+        phone,
+        createAt
     } = request.body;
-
-    const newUser = {
-        id: 3,
-        name,
-        email
-    };
-
-    userses.push(newUser)
-    response.status(201).json(newUser);
+    // response.json(createUser());
+    response.json(createUser())
 });
 
 app.get('/users', (request, response) => {
@@ -119,14 +102,13 @@ app.get('/users', (request, response) => {
 
 });
 
-app.delete('/', (request, response) => {
-    userses.splice(0, 1);
-
-    response.send("Удалили элемент")
+app.delete('/users', (request, response) => {
+    const id = request.body;
+    deleteUser();
 });
 
-app.put('/', (request, response) => {
-    response.json(userses);
+app.put('/users', (request, response) => {
+
 });
 
 app.listen(port, () => console.log(`Запуск на порту: ${port}`));
@@ -149,7 +131,23 @@ function getUserById() {
 
 }
 
-function createUser() {
+async function createUser() {
+    try {
+        var itsTime = new Date()
+        const user = await User.create({
+
+            name: "Kirill",
+            phone: "+79091049890",
+            createAt: itsTime
+        });
+        console.log(User === sequelize.models.User);
+        console.log(user.toJSON());
+        return user.toJSON();
+    } catch (err) {
+        console.log(err)
+    } finally {
+        // sequelize.close();
+    }
 
 }
 
@@ -157,8 +155,13 @@ function updateUser() {
 
 }
 
-function deleteUser() {
-
+async function deleteUser() {
+    try {
+        // Удаление записи
+        const deletedUser = await User.destroy({where: {id:1}});
+    } catch (error) {
+        console.error(error);
+    }
 }
 
 
